@@ -1,0 +1,5 @@
+exe+manifest 新样式有效 若将manifest删除，则失去新样式，即使再还原manifest也无效，重新生成exe后又有效了
+
+win10下amicForVB为IDE开xp风格会导致ide崩溃
+未打开工程时点ams脚本按钮会导致ide崩溃
+amicForVB提供的console模板调试崩溃，生成exe倒是没有问题
