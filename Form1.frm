@@ -17,6 +17,14 @@ Begin VB.Form Form1
       Top             =   2280
       Width           =   1215
    End
+   Begin VB.Label Label1 
+      Caption         =   "注意：同一盘符下移动文件时文件的任何时间都不会变，但其新老所在文件夹的修改日期会变，而复制文件时创建和访问时间都会变，修改时间不变"
+      Height          =   855
+      Left            =   360
+      TabIndex        =   1
+      Top             =   120
+      Width           =   3855
+   End
 End
 Attribute VB_Name = "Form1"
 Attribute VB_GlobalNameSpace = False
@@ -36,22 +44,25 @@ Function CopyModifiedFiles(srcDir As Folder) As Boolean
     Dim fsobj As Object
     Dim fd As Folder
     Dim f As File
-    For Each fsobj In srcDir
+    For Each fsobj In srcDir.SubFolders
         If TypeOf fsobj Is Folder Then
             Set fd = fsobj
-            If fd.DateLastModified > dtmLastCopyTime Then
+            If Not Left(fd.Name, Len(tempDir.Name)) = tempDir.Name And fd.DateLastModified > dtmLastCopyTime Then
                 Dim strTargetDir As String
-                strTargetDir = tempDir.Path + "\" + Replace(fd.Path, rootDir.Path, "")
+                strTargetDir = tempDir.Path + Replace(fd.Path, rootDir.Path, "")
                 If Not fso.FolderExists(strTargetDir) Then
                     fso.CreateFolder strTargetDir
                 End If
                 CopyModifiedFiles fd
             End If
-        ElseIf TypeOf fsobj Is File Then
+        End If
+    Next
+    For Each fsobj In srcDir.Files
+        If TypeOf fsobj Is File Then
             Set f = fsobj
             If f.DateLastModified > dtmLastCopyTime Then
                 Dim strTargetFile As String
-                strTargetFile = tempDir.Path + "\" + Replace(f.Path, rootDir.Path, "")
+                strTargetFile = tempDir.Path + Replace(f.Path, rootDir.Path, "")
                 If Not fso.FileExists(strTargetFile) Then
                     fso.CopyFile f.Path, strTargetFile
                 End If
